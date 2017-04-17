@@ -4,6 +4,8 @@
 #include "MyRio.h"
 
 
+#define NUM_DIO_CHANNELS 40
+
 struct dio_channel_bank_t {
     uint32_t dir;
     uint32_t out;
@@ -17,6 +19,6 @@ struct dio_channel_t {
 	uint8_t bit;
 };
 
-extern const struct dio_channel_t dio_channels[32];
+extern const struct dio_channel_t dio_channels[NUM_DIO_CHANNELS];
 
 #endif /* MYRIO_DRIVER_DEVICE_H_ */

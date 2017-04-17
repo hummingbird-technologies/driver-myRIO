@@ -2,7 +2,7 @@
 #define MYRIO_DRIVER_DIGITAL_INPUTS_H_
 
 #include <stdbool.h>
-#include "device.h"
+#include "channel.h"
 
 struct digital_input_t {
     const struct dio_channel_personality_t *channel_personality;

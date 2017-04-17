@@ -5,9 +5,9 @@
 #include "MyRio.h"
 
 
-typedef uint8_t channel_status_t;
-static const channel_status_t channel_ok = 0;
-static const channel_status_t channel_not_available = 1;
+typedef uint8_t status_t;
+static const status_t status_ok = 0;
+static const status_t channel_not_available = 1;
 
 struct channel_personality_t {
     struct channel_t *channel;
@@ -21,9 +21,15 @@ struct channel_t {
     struct channel_personality_t *personality;
 };
 
-channel_status_t channel_register(
+status_t channel_register(
         struct channel_personality_t *,
         channel_setup_func);
+
+
+status_t device_setup();
+
+status_t device_teardown();
+
 
 #define NUM_DIO_CHANNELS 40
 

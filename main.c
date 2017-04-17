@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2015,
- * National Instruments Corporation.
- * All rights reserved.
- */
-
 #include <stdio.h>
 
 #include "MyRio.h"
@@ -11,17 +5,16 @@
 
 int main(int argc, char **argv)
 {
-    NiFpga_Status status;
+    status_t status;
     struct digital_input_t d;
-
-    status = MyRio_Open();
-    MyRio_ReturnStatusIfNotSuccess(status, "Could not open myRIO session.");
-
     digital_input_init(&d, 35);
-    d.channel_personality->channel->setup((const struct channel_personality_t *) d.channel_personality);
+
+    status = device_setup();
+    if (status != status_ok) {
+        return status;
+    }
 
     printf("Reading: %d\n", digital_input_read(&d));
 
-    status = MyRio_Close();
-    return status;
+    return device_teardown();
 }

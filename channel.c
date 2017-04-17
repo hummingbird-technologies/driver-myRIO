@@ -1,11 +1,15 @@
 #include <stdio.h>
-#include "device.h"
+#include "channel.h"
 
-struct channel_t A_CHANNELS[34] = {{0}};
-struct channel_t B_CHANNELS[34] = {{0}};
-struct channel_t C_CHANNELS[20] = {{0}};
+#define NUM_A_CHANNELS 34
+#define NUM_B_CHANNELS 34
+#define NUM_C_CHANNELS 20
 
-channel_status_t channel_register(
+struct channel_t A_CHANNELS[NUM_A_CHANNELS] = {{0}};
+struct channel_t B_CHANNELS[NUM_B_CHANNELS] = {{0}};
+struct channel_t C_CHANNELS[NUM_C_CHANNELS] = {{0}};
+
+status_t channel_register(
         struct channel_personality_t *cp,
         channel_setup_func setup) {
     struct channel_t *channel = cp->channel;
@@ -17,7 +21,43 @@ channel_status_t channel_register(
     channel->acquired = true;
     channel->setup = setup;
     channel->personality = cp;
-    return channel_ok;
+    return status_ok;
+}
+
+
+status_t device_setup() {
+    status_t status;
+    uint8_t i;
+
+    status = MyRio_Open();
+    MyRio_ReturnStatusIfNotSuccess(status, "Could not open myRIO session.");
+
+    for (i = 0; i < NUM_A_CHANNELS; i++) {
+        struct channel_t channel = A_CHANNELS[i];
+        if (channel.acquired) {
+            channel.setup(channel.personality);
+        }
+    }
+
+    for (i = 0; i < NUM_B_CHANNELS; i++) {
+        struct channel_t channel = B_CHANNELS[i];
+        if (channel.acquired) {
+            channel.setup(channel.personality);
+        }
+    }
+
+    for (i = 0; i < NUM_C_CHANNELS; i++) {
+        struct channel_t channel = C_CHANNELS[i];
+        if (channel.acquired) {
+            channel.setup(channel.personality);
+        }
+    }
+
+    return status_ok;
+}
+
+status_t device_teardown() {
+    return MyRio_Close();
 }
 
 

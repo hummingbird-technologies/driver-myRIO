@@ -10,20 +10,20 @@ static const channel_status_t channel_ok = 0;
 static const channel_status_t channel_not_available = 1;
 
 struct channel_personality_t {
-	struct channel_t *channel;
+    struct channel_t *channel;
 };
 
 typedef NiFpga_Status (* channel_setup_func)(const struct channel_personality_t *);
 
 struct channel_t {
-	bool acquired;
-	channel_setup_func setup;
-	struct channel_personality_t *personality;
+    bool acquired;
+    channel_setup_func setup;
+    struct channel_personality_t *personality;
 };
 
 channel_status_t channel_register(
-		struct channel_personality_t *,
-		channel_setup_func);
+        struct channel_personality_t *,
+        channel_setup_func);
 
 #define NUM_DIO_CHANNELS 40
 
@@ -34,9 +34,9 @@ struct dio_channel_bank_t {
 };
 
 struct dio_channel_personality_t {
-	struct channel_t *channel;
-	struct dio_channel_bank_t *bank;
-	uint8_t bit;
+    struct channel_t *channel;
+    struct dio_channel_bank_t *bank;
+    uint8_t bit;
 };
 
 extern const struct dio_channel_personality_t dio_channel_personalities[NUM_DIO_CHANNELS];

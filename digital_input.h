@@ -5,8 +5,8 @@
 #include "device.h"
 
 struct digital_input_t {
-	const struct dio_channel_personality_t *channel_personality;
-	uint8_t channel_num;
+    const struct dio_channel_personality_t *channel_personality;
+    uint8_t channel_num;
 };
 
 bool digital_input_init(struct digital_input_t *, uint8_t channel_num);

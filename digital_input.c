@@ -5,12 +5,7 @@
 extern NiFpga_Session myrio_session;
 
 
-void digital_input_create(struct digital_input_t *di, uint8_t channel_num) {
-	di->channel_num = channel_num;
-	di->channel = &(dio_channels[channel_num]);
-}
-
-NiFpga_Status digital_input_setup(struct digital_input_t *di) {
+static NiFpga_Status digital_input_setup(struct digital_input_t *di) {
 	NiFpga_Status status;
 	uint8_t dirValue;
 
@@ -19,6 +14,12 @@ NiFpga_Status digital_input_setup(struct digital_input_t *di) {
 
 	dirValue = dirValue & ~(1 << di->channel->bit);
 	return NiFpga_WriteU8(myrio_session, di->channel->bank->dir, dirValue);
+}
+
+void digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
+	di->setup = digital_input_setup;
+	di->channel_num = channel_num;
+	di->channel = dio_channels[channel_num];
 }
 
 NiFpga_Bool digital_input_read(struct digital_input_t *di) {

@@ -17,8 +17,8 @@ int main(int argc, char **argv)
     status = MyRio_Open();
     MyRio_ReturnStatusIfNotSuccess(status, "Could not open myRIO session.");
 
-    digital_input_create(&d, 35);
-    digital_input_setup(&d);
+    digital_input_init(&d, 35);
+    d.setup();
 
     printf("Reading: %d\n", digital_input_read(&d));
 

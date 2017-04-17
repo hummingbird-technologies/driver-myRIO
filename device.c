@@ -1,4 +1,24 @@
+#include <stdio.h>
 #include "device.h"
+
+struct channel_t A_CHANNELS[34] = {{0}};
+struct channel_t B_CHANNELS[34] = {{0}};
+struct channel_t C_CHANNELS[20] = {{0}};
+
+channel_status_t channel_register(
+		struct channel_personality_t *cp,
+		channel_setup_func setup) {
+	struct channel_t *channel = cp->channel;
+
+	if (channel->acquired) {
+		return channel_not_available;
+	}
+
+	channel->acquired = true;
+	channel->setup = setup;
+	channel->personality = cp;
+	return channel_ok;
+}
 
 
 struct dio_channel_bank_t
@@ -9,54 +29,54 @@ struct dio_channel_bank_t
 		c1_dio_channel_bank = {DIOC_70DIR, DIOC_70OUT, DIOC_70IN};
 
 
-const struct dio_channel_t dio_channels[NUM_DIO_CHANNELS] = {
+const struct dio_channel_personality_t dio_channel_personalities[NUM_DIO_CHANNELS] = {
 		// Channel Bank A 0-7
-		{&a1_dio_channel_bank, 0},
-		{&a1_dio_channel_bank, 1},
-		{&a1_dio_channel_bank, 2},
-		{&a1_dio_channel_bank, 3},
-		{&a1_dio_channel_bank, 4},
-		{&a1_dio_channel_bank, 5},
-		{&a1_dio_channel_bank, 6},
-		{&a1_dio_channel_bank, 7},
+		{&A_CHANNELS[11], &a1_dio_channel_bank, 0},
+		{&A_CHANNELS[13], &a1_dio_channel_bank, 1},
+		{&A_CHANNELS[15], &a1_dio_channel_bank, 2},
+		{&A_CHANNELS[17], &a1_dio_channel_bank, 3},
+		{&A_CHANNELS[19], &a1_dio_channel_bank, 4},
+		{&A_CHANNELS[21], &a1_dio_channel_bank, 5},
+		{&A_CHANNELS[23], &a1_dio_channel_bank, 6},
+		{&A_CHANNELS[25], &a1_dio_channel_bank, 7},
 
 		// Channel Bank A 8-15
-		{&a2_dio_channel_bank, 0},
-		{&a2_dio_channel_bank, 1},
-		{&a2_dio_channel_bank, 2},
-		{&a2_dio_channel_bank, 3},
-		{&a2_dio_channel_bank, 4},
-		{&a2_dio_channel_bank, 5},
-		{&a2_dio_channel_bank, 6},
-		{&a2_dio_channel_bank, 7},
+		{&A_CHANNELS[27], &a2_dio_channel_bank, 0},
+		{&A_CHANNELS[29], &a2_dio_channel_bank, 1},
+		{&A_CHANNELS[31], &a2_dio_channel_bank, 2},
+		{&A_CHANNELS[18], &a2_dio_channel_bank, 3},
+		{&A_CHANNELS[22], &a2_dio_channel_bank, 4},
+		{&A_CHANNELS[26], &a2_dio_channel_bank, 5},
+		{&A_CHANNELS[32], &a2_dio_channel_bank, 6},
+		{&A_CHANNELS[34], &a2_dio_channel_bank, 7},
 
 		// Channel Bank B 0-7
-		{&b1_dio_channel_bank, 0},
-		{&b1_dio_channel_bank, 1},
-		{&b1_dio_channel_bank, 2},
-		{&b1_dio_channel_bank, 3},
-		{&b1_dio_channel_bank, 4},
-		{&b1_dio_channel_bank, 5},
-		{&b1_dio_channel_bank, 6},
-		{&b1_dio_channel_bank, 7},
+		{&B_CHANNELS[11], &b1_dio_channel_bank, 0},
+		{&B_CHANNELS[13], &b1_dio_channel_bank, 1},
+		{&B_CHANNELS[15], &b1_dio_channel_bank, 2},
+		{&B_CHANNELS[17], &b1_dio_channel_bank, 3},
+		{&B_CHANNELS[19], &b1_dio_channel_bank, 4},
+		{&B_CHANNELS[21], &b1_dio_channel_bank, 5},
+		{&B_CHANNELS[23], &b1_dio_channel_bank, 6},
+		{&B_CHANNELS[25], &b1_dio_channel_bank, 7},
 
 		// Channel Bank B 8-15
-		{&b2_dio_channel_bank, 0},
-		{&b2_dio_channel_bank, 1},
-		{&b2_dio_channel_bank, 2},
-		{&b2_dio_channel_bank, 3},
-		{&b2_dio_channel_bank, 4},
-		{&b2_dio_channel_bank, 5},
-		{&b2_dio_channel_bank, 6},
-		{&b2_dio_channel_bank, 7},
+		{&B_CHANNELS[27], &b2_dio_channel_bank, 0},
+		{&B_CHANNELS[29], &b2_dio_channel_bank, 1},
+		{&B_CHANNELS[31], &b2_dio_channel_bank, 2},
+		{&B_CHANNELS[18], &b2_dio_channel_bank, 3},
+		{&B_CHANNELS[22], &b2_dio_channel_bank, 4},
+		{&B_CHANNELS[26], &b2_dio_channel_bank, 5},
+		{&B_CHANNELS[32], &b2_dio_channel_bank, 6},
+		{&A_CHANNELS[34], &b2_dio_channel_bank, 7},
 
 		// Channel Bank C 0-7
-		{&c1_dio_channel_bank, 0},
-		{&c1_dio_channel_bank, 1},
-		{&c1_dio_channel_bank, 2},
-		{&c1_dio_channel_bank, 3},
-		{&c1_dio_channel_bank, 4},
-		{&c1_dio_channel_bank, 5},
-		{&c1_dio_channel_bank, 6},
-		{&c1_dio_channel_bank, 7},
+		{&C_CHANNELS[11], &c1_dio_channel_bank, 0},
+		{&C_CHANNELS[12], &c1_dio_channel_bank, 1},
+		{&C_CHANNELS[13], &c1_dio_channel_bank, 2},
+		{&C_CHANNELS[14], &c1_dio_channel_bank, 3},
+		{&C_CHANNELS[15], &c1_dio_channel_bank, 4},
+		{&C_CHANNELS[16], &c1_dio_channel_bank, 5},
+		{&C_CHANNELS[17], &c1_dio_channel_bank, 6},
+		{&C_CHANNELS[18], &c1_dio_channel_bank, 7},
 };

@@ -18,7 +18,7 @@ struct dio_channel_bank_t
 
 
 struct dio_channel_t {
-	struct dio_channel_bank_t *Bank;
+	struct dio_channel_bank_t *bank;
 	uint8_t bit;
 };
 

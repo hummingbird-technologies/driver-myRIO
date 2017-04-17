@@ -21,4 +21,10 @@ struct dio_channel_t {
 
 extern const struct dio_channel_t dio_channels[NUM_DIO_CHANNELS];
 
+
+struct channel_t {
+	const void *ref;
+	NiFpga_Status (*setup)(struct channel_t *);
+};
+
 #endif /* MYRIO_DRIVER_DEVICE_H_ */

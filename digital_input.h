@@ -4,9 +4,8 @@
 #include "device.h"
 
 struct digital_input_t {
-	NiFpga_Status (*setup)();
+	struct channel_t channel;
 	uint8_t channel_num;
-	const struct dio_channel_t *channel;
 };
 
 void digital_input_init(struct digital_input_t *, uint8_t channel_num);

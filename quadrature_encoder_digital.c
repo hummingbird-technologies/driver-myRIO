@@ -1,7 +1,7 @@
-#include "quadrature_encoder.h"
+#include "quadrature_encoder_digital.h"
 
-status_t quadrature_encoder_init(
-        struct quadrature_encoder_t *qe,
+status_t quadrature_encoder_digital_init(
+        struct quadrature_encoder_digital_t *qe,
         uint8_t channel_a_num,
         uint8_t channel_b_num) {
     status_t status;
@@ -16,7 +16,7 @@ status_t quadrature_encoder_init(
     return digital_input_init(&qe->digital_input_b, channel_b_num);
 }
 
-status_t quadrature_encoder_step(struct quadrature_encoder_t *qe) {
+status_t quadrature_encoder_digital_step(struct quadrature_encoder_digital_t *qe) {
     status_t status;
     bool old_a_value = qe->digital_input_a.value;
     bool new_a_value;

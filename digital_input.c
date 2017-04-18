@@ -21,17 +21,17 @@ static NiFpga_Status digital_input_setup(const struct channel_personality_t *cp)
     return NiFpga_WriteU8(myrio_session, dcp->bank->dir, dirValue);
 }
 
-bool digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
+status_t digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
     const struct dio_channel_personality_t *channel_personality = &dio_channel_personalities[channel_num];
     status_t status;
 
     status = channel_register_setup((struct channel_personality_t *) channel_personality, digital_input_setup);
     if (status != status_ok) {
-        return false;
+        return status;
     }
 
     di->channel_personality = channel_personality;
-    return true;
+    return status_ok;
 }
 
 status_t digital_input_read(struct digital_input_t *di) {

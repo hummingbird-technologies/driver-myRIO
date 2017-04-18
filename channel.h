@@ -2,31 +2,47 @@
 #define MYRIO_DRIVER_DEVICE_H_
 
 #include <stdbool.h>
+#include <pthread.h>
 #include "MyRio.h"
 
 
 typedef uint8_t status_t;
 static const status_t status_ok = 0;
 static const status_t channel_not_available = 1;
+static const status_t channel_not_acquired = 2;
 
 struct channel_personality_t {
     struct channel_t *channel;
 };
 
 typedef NiFpga_Status (* channel_setup_func)(const struct channel_personality_t *);
+typedef void *(* channel_run_func)(void *run_args);
 
 struct channel_t {
     bool acquired;
-    channel_setup_func setup;
     struct channel_personality_t *personality;
+
+    channel_setup_func setup;
+    channel_run_func start;
+    channel_run_func stop;
+    void *run_args;
+    pthread_t thread;
 };
 
-status_t channel_register(
+status_t channel_register_setup(
         struct channel_personality_t *,
         channel_setup_func);
 
+status_t channel_run_setup(
+        struct channel_personality_t *,
+        channel_run_func start,
+        channel_run_func stop,
+        void *run_args);
+
 
 status_t device_setup();
+
+void device_run();
 
 status_t device_teardown();
 

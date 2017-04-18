@@ -9,7 +9,7 @@ struct channel_t A_CHANNELS[NUM_A_CHANNELS] = {{0}};
 struct channel_t B_CHANNELS[NUM_B_CHANNELS] = {{0}};
 struct channel_t C_CHANNELS[NUM_C_CHANNELS] = {{0}};
 
-status_t channel_register(
+status_t channel_register_setup(
         struct channel_personality_t *cp,
         channel_setup_func setup) {
     struct channel_t *channel = cp->channel;
@@ -24,6 +24,27 @@ status_t channel_register(
     return status_ok;
 }
 
+status_t channel_run_setup(
+        struct channel_personality_t *cp,
+        channel_run_func start,
+        channel_run_func stop,
+        void *run_args) {
+    struct channel_t *channel = cp->channel;
+
+    if (!channel->acquired) {
+        return channel_not_acquired;
+    }
+
+    if (channel->personality != cp) {
+        return channel_not_available;
+    }
+
+    channel->start = start;
+    channel->stop = stop;
+    channel->run_args = run_args;
+    return status_ok;
+}
+
 
 status_t device_setup() {
     status_t status;
@@ -33,30 +54,129 @@ status_t device_setup() {
     MyRio_ReturnStatusIfNotSuccess(status, "Could not open myRIO session.");
 
     for (i = 0; i < NUM_A_CHANNELS; i++) {
-        struct channel_t channel = A_CHANNELS[i];
-        if (channel.acquired) {
-            channel.setup(channel.personality);
+        struct channel_t *channel = &A_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->setup != NULL) {
+                channel->setup(channel->personality);
+            }
         }
     }
 
     for (i = 0; i < NUM_B_CHANNELS; i++) {
-        struct channel_t channel = B_CHANNELS[i];
-        if (channel.acquired) {
-            channel.setup(channel.personality);
+        struct channel_t *channel = &B_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->setup != NULL) {
+                channel->setup(channel->personality);
+            }
         }
     }
 
     for (i = 0; i < NUM_C_CHANNELS; i++) {
-        struct channel_t channel = C_CHANNELS[i];
-        if (channel.acquired) {
-            channel.setup(channel.personality);
+        struct channel_t *channel = &C_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->setup != NULL) {
+                channel->setup(channel->personality);
+            }
         }
     }
 
     return status_ok;
 }
 
+static status_t channel_start(struct channel_t *c) {
+    return pthread_create(&c->thread, NULL, c->start, c->run_args);
+}
+
+void device_run() {
+    uint8_t i;
+
+    for (i = 0; i < NUM_A_CHANNELS; i++) {
+        struct channel_t *channel = &A_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                channel_start(channel);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_B_CHANNELS; i++) {
+        struct channel_t *channel = &B_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                channel_start(channel);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_C_CHANNELS; i++) {
+        struct channel_t *channel = &C_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                channel_start(channel);
+            }
+        }
+    }
+}
+
 status_t device_teardown() {
+    uint8_t i;
+
+    // Stop threads
+    for (i = 0; i < NUM_A_CHANNELS; i++) {
+        struct channel_t *channel = &A_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->stop != NULL) {
+                channel->stop(channel->run_args);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_B_CHANNELS; i++) {
+        struct channel_t *channel = &B_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->stop != NULL) {
+                channel->stop(channel->run_args);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_C_CHANNELS; i++) {
+        struct channel_t *channel = &C_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->stop != NULL) {
+                channel->stop(channel->run_args);
+            }
+        }
+    }
+
+    // Wait on threads
+    for (i = 0; i < NUM_A_CHANNELS; i++) {
+        struct channel_t *channel = &A_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                pthread_join(channel->thread, NULL);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_B_CHANNELS; i++) {
+        struct channel_t *channel = &B_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                pthread_join(channel->thread, NULL);
+            }
+        }
+    }
+
+    for (i = 0; i < NUM_C_CHANNELS; i++) {
+        struct channel_t *channel = &C_CHANNELS[i];
+        if (channel->acquired) {
+            if (channel->start != NULL) {
+                pthread_join(channel->thread, NULL);
+            }
+        }
+    }
+
     return MyRio_Close();
 }
 

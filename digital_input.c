@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #include "digital_input.h"
+
+
+#define MICROSECONDS_PER_SECOND 1000000
 
 extern NiFpga_Session myrio_session;
 
@@ -21,7 +25,7 @@ bool digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
     const struct dio_channel_personality_t *channel_personality = &dio_channel_personalities[channel_num];
     status_t status;
 
-    status = channel_register((struct channel_personality_t *) channel_personality, digital_input_setup);
+    status = channel_register_setup((struct channel_personality_t *) channel_personality, digital_input_setup);
     if (status != status_ok) {
         return false;
     }
@@ -31,7 +35,7 @@ bool digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
     return true;
 }
 
-NiFpga_Bool digital_input_read(struct digital_input_t *di) {
+status_t digital_input_read(struct digital_input_t *di) {
     const struct dio_channel_personality_t *personality = di->channel_personality;
     NiFpga_Status status;
     uint8_t inValue;
@@ -40,5 +44,36 @@ NiFpga_Bool digital_input_read(struct digital_input_t *di) {
     MyRio_ReturnStatusIfNotSuccess(status, "Could not read from the DIO channel in register!");
 
     inValue = inValue & (1 << personality->bit);
-    return (inValue > 0) ? NiFpga_True : NiFpga_False;
+    di->value = (inValue > 0) ? NiFpga_True : NiFpga_False;
+    printf("Reading: %d\n", di->value);
+    return status_ok;
 }
+
+
+static void *digital_input_stop(void *ra) {
+    struct digital_input_t *digital_input = ((struct digital_input_run_args_t *) ra)->di;
+    digital_input->running = false;
+    return NULL;
+}
+
+static void *digital_input_start(void *ra) {
+    struct digital_input_run_args_t *run_args = (struct digital_input_run_args_t *) ra;
+    uint32_t period_micros = MICROSECONDS_PER_SECOND / run_args->frequency;
+
+    run_args->di->running = true;
+    while (run_args->di->running) {
+        digital_input_read(run_args->di);
+        usleep(period_micros);
+    }
+
+    return NULL;
+}
+
+void digital_input_run(struct digital_input_run_args_t *ra) {
+    channel_run_setup((struct channel_personality_t *) ra->di->channel_personality,
+            digital_input_start,
+            digital_input_stop,
+            ra);
+}
+
+

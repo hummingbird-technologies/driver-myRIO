@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #include "MyRio.h"
 #include "digital_input.h"
+
 
 int main(int argc, char **argv)
 {
@@ -14,7 +16,11 @@ int main(int argc, char **argv)
         return status;
     }
 
-    printf("Reading: %d\n", digital_input_read(&d));
+    struct digital_input_run_args_t ra = {&d, 10};
+    digital_input_run(&ra);
+
+    device_run();
+    sleep(2);
 
     return device_teardown();
 }

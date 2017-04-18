@@ -17,7 +17,7 @@ struct digital_input_run_args_t {
     uint32_t frequency;
 };
 
-status_t digital_input_init(struct digital_input_t *, uint8_t channel_num);
+status_t digital_input_init(struct digital_input_t *, uint8_t dio_num);
 
 status_t digital_input_read(struct digital_input_t *);
 

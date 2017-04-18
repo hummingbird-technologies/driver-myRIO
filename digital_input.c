@@ -12,17 +12,17 @@ extern NiFpga_Session myrio_session;
 static NiFpga_Status digital_input_setup(const struct channel_personality_t *cp) {
     struct dio_channel_personality_t *dcp = (struct dio_channel_personality_t *) cp;
     NiFpga_Status status;
-    uint8_t dirValue;
+    uint8_t dir_value;
 
-    status = NiFpga_ReadU8(myrio_session, dcp->bank->dir, &dirValue);
+    status = NiFpga_ReadU8(myrio_session, dcp->bank->dir, &dir_value);
     MyRio_ReturnStatusIfNotSuccess(status, "Could not read from the DIO channel direction register!");
 
-    dirValue = dirValue & ~(1 << dcp->bit);
-    return NiFpga_WriteU8(myrio_session, dcp->bank->dir, dirValue);
+    dir_value = dir_value & ~(1 << dcp->bit);
+    return NiFpga_WriteU8(myrio_session, dcp->bank->dir, dir_value);
 }
 
-status_t digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
-    const struct dio_channel_personality_t *channel_personality = &dio_channel_personalities[channel_num];
+status_t digital_input_init(struct digital_input_t *di, uint8_t dio_num) {
+    const struct dio_channel_personality_t *channel_personality = &dio_channel_personalities[dio_num];
     status_t status;
 
     status = channel_register_setup((struct channel_personality_t *) channel_personality, digital_input_setup);

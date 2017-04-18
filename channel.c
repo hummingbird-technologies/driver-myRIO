@@ -186,6 +186,16 @@ status_t device_teardown() {
 }
 
 
+struct qenc_channel_bank_t
+        a_qencoder_channel_bank = {ENCACNFG, ENCASTAT, ENCACNTR},
+        b_qencoder_channel_bank = {ENCBCNFG, ENCBSTAT, ENCBCNTR};
+
+const struct qenc_channel_personality_t qenc_channel_personalities[NUM_QENC] = {
+		{NUM_CHANNELS_PER_QENC, {&A_CHANNELS[18], &A_CHANNELS[22]}, &a_qencoder_channel_bank},
+		{NUM_CHANNELS_PER_QENC, {&B_CHANNELS[18], &B_CHANNELS[22]}, &b_qencoder_channel_bank}
+};
+
+
 struct dio_channel_bank_t
         a1_dio_channel_bank = {DIOA_70DIR, DIOA_70OUT, DIOA_70IN},
         a2_dio_channel_bank = {DIOA_158DIR, DIOA_158OUT, DIOA_158IN},

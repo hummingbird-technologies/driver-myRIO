@@ -48,6 +48,24 @@ void device_run();
 status_t device_teardown();
 
 
+#define NUM_QENC 2
+#define NUM_CHANNELS_PER_QENC 2
+
+struct qenc_channel_bank_t {
+    uint32_t cnfg;
+    uint32_t stat;
+    uint32_t cntr;
+};
+
+struct qenc_channel_personality_t {
+	uint8_t num_channels;
+	struct channel_t *channels[2];
+	struct qenc_channel_bank_t *bank;
+};
+
+extern const struct qenc_channel_personality_t qenc_channel_personalities[NUM_QENC];
+
+
 #define NUM_DIO 40
 #define NUM_CHANNELS_PER_DIO 1
 

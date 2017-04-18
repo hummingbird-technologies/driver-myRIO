@@ -6,7 +6,6 @@
 
 struct digital_input_t {
     const struct dio_channel_personality_t *channel_personality;
-    uint8_t channel_num;
 
     /* running mode */
     bool running;

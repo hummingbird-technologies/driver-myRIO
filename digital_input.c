@@ -31,7 +31,6 @@ bool digital_input_init(struct digital_input_t *di, uint8_t channel_num) {
     }
 
     di->channel_personality = channel_personality;
-    di->channel_num = channel_num;
     return true;
 }
 

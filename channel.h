@@ -1,5 +1,5 @@
-#ifndef MYRIO_DRIVER_DEVICE_H_
-#define MYRIO_DRIVER_DEVICE_H_
+#ifndef MYRIO_DRIVER_CHANNEL_H_
+#define MYRIO_DRIVER_CHANNEL_H_
 
 #include <stdbool.h>
 #include <pthread.h>
@@ -12,7 +12,8 @@ static const status_t channel_not_available = 1;
 static const status_t channel_not_acquired = 2;
 
 struct channel_personality_t {
-    struct channel_t *channel;
+    uint8_t num_channels;
+    struct channel_t *channels[];
 };
 
 typedef NiFpga_Status (* channel_setup_func)(const struct channel_personality_t *);
@@ -47,7 +48,8 @@ void device_run();
 status_t device_teardown();
 
 
-#define NUM_DIO_CHANNELS 40
+#define NUM_DIO 40
+#define NUM_CHANNELS_PER_DIO 1
 
 struct dio_channel_bank_t {
     uint32_t dir;
@@ -56,12 +58,13 @@ struct dio_channel_bank_t {
 };
 
 struct dio_channel_personality_t {
-    struct channel_t *channel;
+    uint8_t num_channels;
+    struct channel_t *channels[NUM_CHANNELS_PER_DIO];
     struct dio_channel_bank_t *bank;
     uint8_t bit;
 };
 
-extern const struct dio_channel_personality_t dio_channel_personalities[NUM_DIO_CHANNELS];
+extern const struct dio_channel_personality_t dio_channel_personalities[NUM_DIO];
 
 
-#endif /* MYRIO_DRIVER_DEVICE_H_ */
+#endif /* MYRIO_DRIVER_CHANNEL_H_ */
